@@ -2369,7 +2369,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 483478983}
+  aiButton: {fileID: 1919471689}
   currentState: 0
+  diceValues: 0000000000000000000000000000000000000000
+  diceCount: 000000000000000000000000000000000000000000000000
+  onePair: 0
+  twoPair: 0
+  threeKind: 0
+  fourKind: 0
+  fullHouse: 0
+  smallStraight: 0
+  largeStraight: 0
 --- !u!4 &1065900562
 Transform:
   m_ObjectHideFlags: 0

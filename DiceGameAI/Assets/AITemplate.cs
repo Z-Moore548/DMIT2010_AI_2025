@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,7 @@ public class AITemplate : MonoBehaviour
     [SerializeField] int[] diceCount = new int[6];
 
     [SerializeField] int onePair, twoPair, threeKind, fourKind, fullHouse, smallStraight, largeStraight;
+    [SerializeField] int numInStraight, currentRun;
     enum AIStates
     {
         RollDice1,
@@ -37,6 +39,7 @@ public class AITemplate : MonoBehaviour
         if (!gameManager.IsRolling() && aiButton.interactable == false)
         {
             CheckCombos();
+            SelectCombos();
             aiButton.interactable = true;
         }
     }
@@ -48,17 +51,24 @@ public class AITemplate : MonoBehaviour
             case AIStates.RollDice1:
                 gameManager.RollDice(); //Push the roll the dice button.
                 aiButton.interactable = false;
-                for (int i = 0; i < 6; i++)
-                {
-                    gameManager.SetComboActive(i, false);
-                }
-                currentState = AIStates.EvaluateDice1; // not going to have each on diffrent button presses. on one press it should roll, eval, and keep
+                UpdateComboButtons();
+                currentState = AIStates.KeepDice; // not going to have each on diffrent button presses. on one press it should roll, eval, and keep
                 break;
             case AIStates.EvaluateDice1:
                 CheckCombos();
+                SelectCombos();
                 break;
             case AIStates.KeepDice:
-                                                
+                if (onePair > -1) //HELL YEAH!
+                {
+                    for (int i = 0; i < diceValues.Length; i++)
+                    {
+                        if (diceValues[i] == onePair)
+                        {
+                            gameManager.KeepDie(i);
+                        } 
+                    }
+                }                
                 break;
             case AIStates.RollDice2:
                                                 
@@ -81,6 +91,9 @@ public class AITemplate : MonoBehaviour
         fullHouse = -1;
         smallStraight = -1;
         largeStraight = -1;
+
+        numInStraight = 0;
+        currentRun = 0;
 
         //get dice values
         gameManager.GetDiceValues(ref diceValues);
@@ -107,40 +120,111 @@ public class AITemplate : MonoBehaviour
                 else
                 {
                     twoPair = i;
+                    gameManager.SetComboActive(0, true);
                 }
             }
             if (diceCount[i] >= 3)
             {
                 threeKind = i;
+                gameManager.SetComboActive(1, true);
             }
             if (diceCount[i] >= 4)
             {
                 fourKind = i;
+                gameManager.SetComboActive(2, true);
             }
-            if (twoPair != -1 && threeKind != -1)
+            if (twoPair > -1 && threeKind > -1)
             {
-                fullHouse = 1;
+                fullHouse = 0;
+                gameManager.SetComboActive(3, true);
             }
-            if (i < 3) //this works to find the straights but there is probaby a better way to do this.
+            //identify straight
+            if (diceCount[i] > 0)
             {
-                if (diceCount[i] >= 1 && diceCount[i + 1] >= 1 && diceCount[i + 2] >= 1 && diceCount[i + 3] >= 1)
-                {
-                    smallStraight = i;
-                }
+                currentRun++;
             }
-            if (i < 2)
+            else
             {
-                if (diceCount[i] >= 1 && diceCount[i + 1] >= 1 && diceCount[i + 2] >= 1 && diceCount[i + 3] >= 1 && diceCount[i + 4] >= 1)
-                {
-                    largeStraight = i;
-                }
+                currentRun = 0;
             }
-            
+            if (currentRun == 4)
+            {
+                numInStraight = currentRun;
+                smallStraight = 1;
+                gameManager.SetComboActive(4, true);
+            }
+            if (currentRun == 5)
+            {
+                numInStraight = currentRun;
+                largeStraight = 0;
+                gameManager.SetComboActive(5, true);
+            }
+
+            // if (i < 3) //this works to find the straights but there is probaby a better way to do this.
+            //     {
+            //         if (diceCount[i] >= 1 && diceCount[i + 1] >= 1 && diceCount[i + 2] >= 1 && diceCount[i + 3] >= 1)
+            //         {
+            //             smallStraight = i;
+            //             gameManager.SetComboActive(4, true);
+            //         }
+            //     }
+            // if (i < 2)
+            // {
+            //     if (diceCount[i] >= 1 && diceCount[i + 1] >= 1 && diceCount[i + 2] >= 1 && diceCount[i + 3] >= 1 && diceCount[i + 4] >= 1)
+            //     {
+            //         largeStraight = i;
+            //         gameManager.SetComboActive(5, true);
+            //     }
+            // }
+
+        }
+    }
+
+    void SelectCombos()
+    {
+        if (largeStraight > -1 && !gameManager.IsComboSelected(5))
+        {
+            gameManager.SelectCombo(5);
+            currentState = AIStates.RollDice1;
+            UpdateComboButtons();
+        }
+        else if (fullHouse > -1 && !gameManager.IsComboSelected(3))
+        {
+            gameManager.SelectCombo(3);
+            currentState = AIStates.RollDice1;
+            UpdateComboButtons();
+        }
+        else if (fourKind > -1 && !gameManager.IsComboSelected(2))
+        {
+            gameManager.SelectCombo(2);
+            currentState = AIStates.RollDice1;
+            UpdateComboButtons();
+        }
+        else if (smallStraight > -1 && gameManager.IsComboSelected(5) && !gameManager.IsComboSelected(4))
+        {
+            gameManager.SelectCombo(4);
+            currentState = AIStates.RollDice1;
+            UpdateComboButtons();
+        }
+        else if (threeKind > -1 && gameManager.IsComboSelected(2) && gameManager.IsComboSelected(3) && !gameManager.IsComboSelected(1))
+        {
+            gameManager.SelectCombo(1);
+            currentState = AIStates.RollDice1;
+            UpdateComboButtons();
+        }
+        else if (twoPair > -1 && gameManager.IsComboSelected(5) && gameManager.IsComboSelected(4) && gameManager.IsComboSelected(3) && gameManager.IsComboSelected(2) && gameManager.IsComboSelected(1) && !gameManager.IsComboSelected(0))
+        {
+            gameManager.SelectCombo(0);
+            currentState = AIStates.RollDice1;
+            UpdateComboButtons();
         }
     }
 
     void UpdateComboButtons()
     {
-        
+        for (int i = 0; i < 6; i++)
+        {
+            gameManager.SetComboActive(i, false);
+        }
     }
 }

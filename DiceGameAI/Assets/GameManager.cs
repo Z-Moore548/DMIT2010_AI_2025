@@ -47,17 +47,21 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
         #region Debug: Alter dice
 
-        if (Input.GetKeyUp(KeyCode.Alpha1)) 
-        {
-            diceValues[0]++;
-            if (diceValues[0] == 6)
+            if (Input.GetKeyUp(KeyCode.Alpha1))
             {
-                diceValues[0] = 0;                
+                diceValues[0]++;
+                if (diceValues[0] == 6)
+                {
+                    diceValues[0] = 0;
+                }
+                dice[0].GetComponent<Image>().sprite = diceSprites[diceValues[0]];
             }
-            dice[0].GetComponent<Image>().sprite = diceSprites[diceValues[0]];
-        }
         if (Input.GetKeyUp(KeyCode.Alpha2))
         {
             diceValues[1]++;

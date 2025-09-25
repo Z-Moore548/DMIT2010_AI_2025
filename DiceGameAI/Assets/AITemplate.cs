@@ -23,7 +23,7 @@ public class AITemplate : MonoBehaviour
     [SerializeField] int[] diceCount = new int[6];
 
     [SerializeField] int onePair, twoPair, threeKind, fourKind, fullHouse, smallStraight, largeStraight;
-    [SerializeField] int numInStraight, currentRun;
+    [SerializeField] int numInStraight, currentRun, partialStraight;
     enum AIStates
     {
         RollDice1,
@@ -58,17 +58,67 @@ public class AITemplate : MonoBehaviour
                 CheckCombos();
                 SelectCombos();
                 break;
-            case AIStates.KeepDice:
-                if (onePair > -1) //HELL YEAH!
+            case AIStates.KeepDice://HELL YEAH!
+                if (!gameManager.IsComboSelected(5) && !gameManager.IsComboSelected(4) && numInStraight > 2) //HOLY SHIT ITS WORKING! IM KEEPING PARTIAL STRAIGHTS
                 {
-                    for (int i = 0; i < diceValues.Length; i++)
+                    int m = 0;
+                    for (int i = 0; i < numInStraight; i++)
                     {
-                        if (diceValues[i] == onePair)
+                        
+                        for (int l = 0; l < diceValues.Length; l++)
                         {
-                            gameManager.KeepDie(i);
-                        } 
+                            if (diceValues[l] == partialStraight - m)
+                            {
+                                gameManager.KeepDie(l);
+                                l = diceValues.Length;
+                            }
+                        }
+                        m++;
                     }
-                }                
+                }
+
+
+                if (gameManager.IsComboSelected(5) && gameManager.IsComboSelected(4) || numInStraight < 3)
+                    {
+                        //this is the locgic for keeping paris.
+                        if (twoPair > -1)
+                        {
+                            if (gameManager.IsComboSelected(3) && gameManager.IsComboSelected(0)) //if FH and TP are done this will only keep one set of the same dice
+                            {
+                                for (int i = 0; i < diceValues.Length; i++)
+                                {
+                                    if (diceValues[i] == onePair)
+                                    {
+                                        gameManager.KeepDie(i);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < diceValues.Length; i++)
+                                {
+                                    if (diceValues[i] == onePair)
+                                    {
+                                        gameManager.KeepDie(i);
+                                    }
+                                    if (diceValues[i] == twoPair)
+                                    {
+                                        gameManager.KeepDie(i);
+                                    }
+                                }
+                            }
+                        }
+                        else if (onePair > -1)
+                        {
+                            for (int i = 0; i < diceValues.Length; i++)
+                            {
+                                if (diceValues[i] == onePair)
+                                {
+                                    gameManager.KeepDie(i);
+                                }
+                            }
+                        }
+                    }                
                 break;
             case AIStates.RollDice2:
                                                 
@@ -94,6 +144,7 @@ public class AITemplate : MonoBehaviour
 
         numInStraight = 0;
         currentRun = 0;
+        partialStraight = 0;
 
         //get dice values
         gameManager.GetDiceValues(ref diceValues);
@@ -147,12 +198,18 @@ public class AITemplate : MonoBehaviour
             {
                 currentRun = 0;
             }
-            if (currentRun == 4)
+            if (currentRun == 3)
             {
                 numInStraight = currentRun;
-                smallStraight = 1;
-                gameManager.SetComboActive(4, true);
+                partialStraight = i;
             }
+            if (currentRun == 4)
+                {
+                    numInStraight = currentRun;
+                    partialStraight = i;
+                    smallStraight = 1;
+                    gameManager.SetComboActive(4, true);
+                }
             if (currentRun == 5)
             {
                 numInStraight = currentRun;

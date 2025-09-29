@@ -39,7 +39,7 @@ public class AITemplate : MonoBehaviour
         if (!gameManager.IsRolling() && aiButton.interactable == false)
         {
             CheckCombos();
-            SelectCombos();
+            SelectCombos(currentState);
             aiButton.interactable = true;
         }
     }
@@ -56,15 +56,15 @@ public class AITemplate : MonoBehaviour
                 break;
             case AIStates.EvaluateDice1:
                 CheckCombos();
-                SelectCombos();
+                SelectCombos(currentState);
                 break;
             case AIStates.KeepDice://HELL YEAH!
-                if (!gameManager.IsComboSelected(5) && !gameManager.IsComboSelected(4) && numInStraight > 2) //HOLY SHIT ITS WORKING! IM KEEPING PARTIAL STRAIGHTS
+                if (!gameManager.IsComboSelected(5) && numInStraight > 2 || !gameManager.IsComboSelected(4) && numInStraight > 2) //HOLY SHIT ITS WORKING! IM KEEPING PARTIAL STRAIGHTS
                 {
                     int m = 0;
                     for (int i = 0; i < numInStraight; i++)
                     {
-                        
+
                         for (int l = 0; l < diceValues.Length; l++)
                         {
                             if (diceValues[l] == partialStraight - m)
@@ -76,39 +76,44 @@ public class AITemplate : MonoBehaviour
                         m++;
                     }
                 }
+                else if (gameManager.IsComboSelected(0) && gameManager.IsComboSelected(1) && gameManager.IsComboSelected(2) && gameManager.IsComboSelected(3) && numInStraight > 1)
+                {
 
-
-                if (gameManager.IsComboSelected(5) && gameManager.IsComboSelected(4) || numInStraight < 3)
+                    int m = 0;
+                    for (int i = 0; i < numInStraight; i++)
                     {
-                        //this is the locgic for keeping paris.
-                        if (twoPair > -1)
+
+                        for (int l = 0; l < diceValues.Length; l++)
                         {
-                            if (gameManager.IsComboSelected(3) && gameManager.IsComboSelected(0)) //if FH and TP are done this will only keep one set of the same dice
+                            if (diceValues[l] == partialStraight - m)
                             {
-                                for (int i = 0; i < diceValues.Length; i++)
-                                {
-                                    if (diceValues[i] == onePair)
-                                    {
-                                        gameManager.KeepDie(i);
-                                    }
-                                }
+                                gameManager.KeepDie(l);
+                                l = diceValues.Length;
                             }
-                            else
+                        }
+                        m++;
+                    }
+                }
+                else if(gameManager.IsComboSelected(0) && gameManager.IsComboSelected(1) && gameManager.IsComboSelected(2) && gameManager.IsComboSelected(3))
+                {
+                    
+                }
+                else if (gameManager.IsComboSelected(5) && gameManager.IsComboSelected(4) || numInStraight < 3)
+                {
+                    //this is the locgic for keeping paris.
+                    if (twoPair > -1)
+                    {
+                        if (gameManager.IsComboSelected(3) && gameManager.IsComboSelected(0)) //if FH and TP are done this will only keep one set of the same dice
+                        {
+                            for (int i = 0; i < diceValues.Length; i++)
                             {
-                                for (int i = 0; i < diceValues.Length; i++)
-                                {
-                                    if (diceValues[i] == onePair)
-                                    {
-                                        gameManager.KeepDie(i);
-                                    }
-                                    if (diceValues[i] == twoPair)
-                                    {
-                                        gameManager.KeepDie(i);
-                                    }
+                                if (diceValues[i] == onePair)// only probelm with this is that is that for example, you need 4K and you roll a full house of 2 1s and 3 4s.
+                                {                           //you will end up keeping the 1s. not that big of an issue but it is an edge case
+                                    gameManager.KeepDie(i);
                                 }
                             }
                         }
-                        else if (onePair > -1)
+                        else
                         {
                             for (int i = 0; i < diceValues.Length; i++)
                             {
@@ -116,15 +121,33 @@ public class AITemplate : MonoBehaviour
                                 {
                                     gameManager.KeepDie(i);
                                 }
+                                if (diceValues[i] == twoPair)
+                                {
+                                    gameManager.KeepDie(i);
+                                }
                             }
                         }
-                    }                
+                    }
+                    else if (onePair > -1)
+                    {
+                        for (int i = 0; i < diceValues.Length; i++)
+                        {
+                            if (diceValues[i] == onePair)
+                            {
+                                gameManager.KeepDie(i);
+                            }
+                        }
+                    }
+                }
+                currentState = AIStates.RollDice2;              
                 break;
             case AIStates.RollDice2:
-                                                
+                gameManager.RollDice(); //Push the roll the dice button.
+                aiButton.interactable = false;
+                currentState = AIStates.EvaluateDice2;                       
                 break;
             case AIStates.EvaluateDice2:
-                                                
+                                          
                 break;
             default:
                 break;
@@ -198,6 +221,11 @@ public class AITemplate : MonoBehaviour
             {
                 currentRun = 0;
             }
+            if (currentRun == 2 && numInStraight < 2)
+            {
+                numInStraight = currentRun;
+                partialStraight = i;
+            }
             if (currentRun == 3)
             {
                 numInStraight = currentRun;
@@ -237,43 +265,92 @@ public class AITemplate : MonoBehaviour
         }
     }
 
-    void SelectCombos()
+    void SelectCombos(AIStates state)
     {
-        if (largeStraight > -1 && !gameManager.IsComboSelected(5))
+        if (state == AIStates.KeepDice)
         {
-            gameManager.SelectCombo(5);
-            currentState = AIStates.RollDice1;
-            UpdateComboButtons();
+
+
+            if (largeStraight > -1 && !gameManager.IsComboSelected(5))
+            {
+                gameManager.SelectCombo(5);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (fullHouse > -1 && !gameManager.IsComboSelected(3))
+            {
+                gameManager.SelectCombo(3);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (fourKind > -1 && !gameManager.IsComboSelected(2))
+            {
+                gameManager.SelectCombo(2);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (smallStraight > -1 && gameManager.IsComboSelected(5) && !gameManager.IsComboSelected(4))
+            {
+                gameManager.SelectCombo(4);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (threeKind > -1 && gameManager.IsComboSelected(2) && gameManager.IsComboSelected(3) && !gameManager.IsComboSelected(1))
+            {
+                gameManager.SelectCombo(1);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (twoPair > -1 && gameManager.IsComboSelected(5) && gameManager.IsComboSelected(4) && gameManager.IsComboSelected(3) && gameManager.IsComboSelected(2) && gameManager.IsComboSelected(1) && !gameManager.IsComboSelected(0))
+            {
+                gameManager.SelectCombo(0);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
         }
-        else if (fullHouse > -1 && !gameManager.IsComboSelected(3))
+        if (state == AIStates.EvaluateDice2)
         {
-            gameManager.SelectCombo(3);
-            currentState = AIStates.RollDice1;
-            UpdateComboButtons();
-        }
-        else if (fourKind > -1 && !gameManager.IsComboSelected(2))
-        {
-            gameManager.SelectCombo(2);
-            currentState = AIStates.RollDice1;
-            UpdateComboButtons();
-        }
-        else if (smallStraight > -1 && gameManager.IsComboSelected(5) && !gameManager.IsComboSelected(4))
-        {
-            gameManager.SelectCombo(4);
-            currentState = AIStates.RollDice1;
-            UpdateComboButtons();
-        }
-        else if (threeKind > -1 && gameManager.IsComboSelected(2) && gameManager.IsComboSelected(3) && !gameManager.IsComboSelected(1))
-        {
-            gameManager.SelectCombo(1);
-            currentState = AIStates.RollDice1;
-            UpdateComboButtons();
-        }
-        else if (twoPair > -1 && gameManager.IsComboSelected(5) && gameManager.IsComboSelected(4) && gameManager.IsComboSelected(3) && gameManager.IsComboSelected(2) && gameManager.IsComboSelected(1) && !gameManager.IsComboSelected(0))
-        {
-            gameManager.SelectCombo(0);
-            currentState = AIStates.RollDice1;
-            UpdateComboButtons();
+            if (largeStraight > -1 && !gameManager.IsComboSelected(5))
+            {
+                gameManager.SelectCombo(5);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (fullHouse > -1 && !gameManager.IsComboSelected(3))
+            {
+                gameManager.SelectCombo(3);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (fourKind > -1 && !gameManager.IsComboSelected(2))
+            {
+                gameManager.SelectCombo(2);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (smallStraight > -1 && !gameManager.IsComboSelected(4))
+            {
+                gameManager.SelectCombo(4);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (threeKind > -1 && !gameManager.IsComboSelected(1))
+            {
+                gameManager.SelectCombo(1);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else if (twoPair > -1 && !gameManager.IsComboSelected(0))
+            {
+                gameManager.SelectCombo(0);
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
+            else
+            {
+                currentState = AIStates.RollDice1;
+                UpdateComboButtons();
+            }
         }
     }
 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject keepPanel, rollButton;
+    [SerializeField] GameObject keepPanel;
 
     [SerializeField] GameObject[] dice, keepButtons, comboButtons;
 
@@ -53,15 +53,15 @@ public class GameManager : MonoBehaviour
         }
         #region Debug: Alter dice
 
-            if (Input.GetKeyUp(KeyCode.Alpha1))
+        if (Input.GetKeyUp(KeyCode.Alpha1))
+        {
+            diceValues[0]++;
+            if (diceValues[0] == 6)
             {
-                diceValues[0]++;
-                if (diceValues[0] == 6)
-                {
-                    diceValues[0] = 0;
-                }
-                dice[0].GetComponent<Image>().sprite = diceSprites[diceValues[0]];
+                diceValues[0] = 0;
             }
+            dice[0].GetComponent<Image>().sprite = diceSprites[diceValues[0]];
+        }
         if (Input.GetKeyUp(KeyCode.Alpha2))
         {
             diceValues[1]++;
@@ -114,7 +114,6 @@ public class GameManager : MonoBehaviour
             if (Time.time > timeStamp + rollTime)
             {
                 diceRolling = false;
-                rollButton.GetComponent<Button>().interactable = true;
                 if (rollNumber == 1)
                 {
                     keepPanel.SetActive(true);
@@ -150,7 +149,6 @@ public class GameManager : MonoBehaviour
             rollNumber++;
             diceRolling = true;
             timeStamp = Time.time;
-            rollButton.GetComponent<Button>().interactable = false;
             keepPanel.SetActive(false);
         }
     }
@@ -170,7 +168,7 @@ public class GameManager : MonoBehaviour
         Button button = comboButtons[index].GetComponent<Button>();
 
         // If there is a button component then make in not interactable and set its text to Done.
-        if (button != null )
+        if (button != null)
         {
             if (button.interactable)
             {

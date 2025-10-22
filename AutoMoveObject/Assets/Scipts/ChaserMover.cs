@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class AdvancedMover : MonoBehaviour
+public class ChaserMover : MonoBehaviour
 {
     [SerializeField] float movementSpeed;
     RaycastHit hitFront, hitLeft, hitRight;
@@ -17,11 +17,10 @@ public class AdvancedMover : MonoBehaviour
     bool grounded;
 
     [SerializeField] List<GameObject> targets = new List<GameObject>();
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        movementSpeed = 5;
+        movementSpeed = 6;
         forwardDist = 1.0f;
         sideDist = 2.0f;
         // downDist = 1.0f;
@@ -31,7 +30,7 @@ public class AdvancedMover : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void Update()
+    void Update()
     {
         if (grounded)
         {
@@ -44,15 +43,15 @@ public class AdvancedMover : MonoBehaviour
             }
             else if (targets.Count > 0)
             {
-                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0)))
-                {//LineCast WAs Hitting Something so i took out the excalmation !!!!!!!!!!!!!!!
+                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0)))//could do a layermask to fix
+                {//LineCast WAs Hitting Something so i took out the excalmation !!!!!!!!!!!
                     transform.LookAt(targets[0].transform.position);
                 }
-                
-                // if (Vector3.Distance(transform.position + Vector3.forward, targets[0].transform.position) < 1.5f) //The boxcast gets in the way of this and makes it turn
-                // {
-                //     targets[0].SetActive(false);
-                // }
+
+                if (Vector3.Distance(transform.position + Vector3.forward, targets[0].transform.position) < 1) //The boxcast gets in the way of this and makes it turn
+                {
+                    targets[0].SetActive(false);
+                }
 
                 if (targets[0].activeSelf == false)
                 {
@@ -61,7 +60,7 @@ public class AdvancedMover : MonoBehaviour
             }
 
             // Rotate the mover if a hole is detected in front
-            if (!Physics.BoxCast(downCheck.transform.position, new Vector3(0.5f, 0.9f, 0.5f), -transform.up, out hitFront, Quaternion.identity, forwardDist))
+             if (!Physics.BoxCast(downCheck.transform.position, new Vector3(0.5f, 0.9f, 0.5f), -transform.up, out hitFront, Quaternion.identity, forwardDist))
             {
                 // Check if there is a floor to jump to
                 if (Physics.BoxCast(jumpCheck.transform.position, new Vector3(0.5f, 0.9f, 0.5f), -transform.up, out hitFront, Quaternion.identity, forwardDist))
@@ -84,12 +83,14 @@ public class AdvancedMover : MonoBehaviour
             }
         }
     }
-
+    // void OnDrawGizmosSelected()
+    // {
+    //     Gizmos.DrawWireCube(downCheck.transform.position  + new Vector3(0,-1,0), new Vector3(1, 1, 1));
+    // }
     void FixedUpdate()
     {
         transform.Translate(Vector3.forward * movementSpeed * Time.fixedDeltaTime);
     }
-
     void RotateAway()
     {
         leftWall = false;
@@ -131,7 +132,6 @@ public class AdvancedMover : MonoBehaviour
 
         }
     }
-
     private void OnCollisionEnter(Collision collision)
     {
         grounded = true;
@@ -139,7 +139,7 @@ public class AdvancedMover : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Chaser"))
+        if (other.CompareTag("Runner"))
         {
             targets.Add(other.transform.parent.gameObject);
         }
@@ -147,10 +147,9 @@ public class AdvancedMover : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Chaser"))
+        if (other.CompareTag("Runner"))
         {
             targets.Remove(other.transform.parent.gameObject);
         }
     }
 }
-

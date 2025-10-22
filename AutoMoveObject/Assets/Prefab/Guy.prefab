@@ -73,6 +73,7 @@ GameObject:
   - component: {fileID: 4989650647314797450}
   - component: {fileID: 7063087705039265768}
   - component: {fileID: 2057552255224347087}
+  - component: {fileID: 2725375713018168259}
   m_Layer: 0
   m_Name: Guy
   m_TagString: Untagged
@@ -144,6 +145,27 @@ MonoBehaviour:
   downCheck: {fileID: 1419755271263397611}
   jumpCheck: {fileID: 5252746013077913114}
   targets: []
+--- !u!135 &2725375713018168259
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5817381675446899177}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 7
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &6458541263969346955
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,10 +178,9 @@ GameObject:
   - component: {fileID: 4936109506476737623}
   - component: {fileID: 3416579172954045805}
   - component: {fileID: 3316715155279688823}
-  - component: {fileID: 2560281559663216608}
   m_Layer: 0
   m_Name: Guy
-  m_TagString: Untagged
+  m_TagString: Runner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -256,27 +277,6 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!135 &2560281559663216608
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6458541263969346955}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8725024015689360259
 GameObject:

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class AdvancedMover : MonoBehaviour
 {
@@ -8,16 +9,18 @@ public class AdvancedMover : MonoBehaviour
     [SerializeField] float forwardDist, sideDist, downDist;
     bool leftWall, rightWall;
 
-    int randInt;
+    int randInt, count;//count might not work in the future as i just have it so it takes a second before detecting something. 
+    // but if ther is two hunters detected but one is behind a wall it wont see the second
 
     [SerializeField] GameObject downCheck, jumpCheck;
 
     Rigidbody rbody;
 
-    bool grounded;
+    bool grounded, isDisguised;
 
-    [SerializeField] List<GameObject> targets = new List<GameObject>();
-
+    [SerializeField] List<GameObject> chaser = new List<GameObject>();
+    [SerializeField] List<GameObject> speed = new List<GameObject>();
+    [SerializeField] List<GameObject> disguise = new List<GameObject>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -28,6 +31,7 @@ public class AdvancedMover : MonoBehaviour
 
         rbody = GetComponent<Rigidbody>();
         grounded = true;
+        isDisguised = false;
     }
 
     // Update is called once per frame
@@ -42,23 +46,107 @@ public class AdvancedMover : MonoBehaviour
 
                 RotateAway();
             }
-            else if (targets.Count > 0)
+            else if(disguise.Count > 0)
             {
-                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0)))
-                {//LineCast WAs Hitting Something so i took out the excalmation !!!!!!!!!!!!!!!
-                    transform.LookAt(targets[0].transform.position);
+                if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), disguise[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count++;
+                    if (count >= 50)
+                    {
+                        if (Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), -transform.right, out hitLeft, Quaternion.identity, sideDist) || Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), transform.right, out hitRight, Quaternion.identity, sideDist))
+                        {
+
+                        }
+                        else
+                        {
+                            transform.LookAt(disguise[0].transform.position);
+                        }
+
+                    }
                 }
-                
+                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), disguise[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count = 0;
+                }
+                if (Vector3.Distance(transform.position + Vector3.forward, disguise[0].transform.position) < 1.5f)
+                {
+                    disguise[0].SetActive(false);
+                    StartCoroutine(Disguise());
+                }
+                if (disguise[0].activeSelf == false)
+                {
+                    disguise.RemoveAt(0);
+                }
+            }
+            else if (speed.Count > 0)
+            {
+                if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), speed[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count++;
+                    if (count >= 50)
+                    {
+                        if (Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), -transform.right, out hitLeft, Quaternion.identity, sideDist) || Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), transform.right, out hitRight, Quaternion.identity, sideDist))
+                        {
+
+                        }
+                        else
+                        {
+                            transform.LookAt(speed[0].transform.position);
+                        }
+
+                    }
+
+                }
+                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), speed[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count = 0;
+                }
+                if (Vector3.Distance(transform.position + Vector3.forward, speed[0].transform.position) < 1.5f)
+                {
+                    speed[0].SetActive(false);
+                    StartCoroutine(SpeedUp());
+                }
+                if (speed[0].activeSelf == false)
+                {
+                    speed.RemoveAt(0);
+                }
+            }
+            else if (chaser.Count > 0)
+            {
+                Debug.Log("RUN");
+                if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), chaser[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    //transform.LookAt(chaser[0].transform.position);
+                    count++;
+                    if (count >= 50)
+                    {
+                        if (Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), -transform.right, out hitLeft, Quaternion.identity, sideDist) || Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), transform.right, out hitRight, Quaternion.identity, sideDist))
+                        {
+
+                        }
+                        else
+                        {
+                            transform.rotation = Quaternion.LookRotation(transform.position - chaser[0].transform.position);
+                        }
+
+                    }
+
+                }
+                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), chaser[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count = 0;
+                }
                 // if (Vector3.Distance(transform.position + Vector3.forward, targets[0].transform.position) < 1.5f) //The boxcast gets in the way of this and makes it turn
                 // {
                 //     targets[0].SetActive(false);
                 // }
 
-                if (targets[0].activeSelf == false)
+                if (chaser[0].activeSelf == false)
                 {
-                    targets.RemoveAt(0);
+                    chaser.RemoveAt(0);
                 }
             }
+            
 
             // Rotate the mover if a hole is detected in front
             if (!Physics.BoxCast(downCheck.transform.position, new Vector3(0.5f, 0.9f, 0.5f), -transform.up, out hitFront, Quaternion.identity, forwardDist))
@@ -141,7 +229,15 @@ public class AdvancedMover : MonoBehaviour
     {
         if (other.CompareTag("Chaser"))
         {
-            targets.Add(other.transform.parent.gameObject);
+            chaser.Add(other.transform.parent.gameObject);
+        }
+        if (other.CompareTag("PickUp"))
+        {
+            speed.Add(other.transform.parent.gameObject);
+        }
+        if (other.CompareTag("Disguse"))
+        {
+            disguise.Add(other.transform.parent.gameObject);
         }
     }
 
@@ -149,8 +245,28 @@ public class AdvancedMover : MonoBehaviour
     {
         if (other.CompareTag("Chaser"))
         {
-            targets.Remove(other.transform.parent.gameObject);
+            chaser.Remove(other.transform.parent.gameObject);
         }
+        if (other.CompareTag("PickUp"))
+        {
+            speed.Remove(other.transform.parent.gameObject);
+        }
+        if (other.CompareTag("Disguse"))
+        {
+            disguise.Add(other.transform.parent.gameObject);
+        }
+    }
+    IEnumerator SpeedUp()
+    {
+        movementSpeed += 2;
+        yield return new WaitForSeconds(3);
+        movementSpeed -= 2;
+    }
+    IEnumerator Disguise()
+    {
+        isDisguised = true;
+        yield return new WaitForSeconds(3);
+        isDisguised = false;
     }
 }
 

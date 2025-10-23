@@ -493,7 +493,7 @@ GameObject:
   - component: {fileID: 7784465839598818005}
   - component: {fileID: 4845847773971455972}
   m_Layer: 0
-  m_Name: Runner
+  m_Name: Chaser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

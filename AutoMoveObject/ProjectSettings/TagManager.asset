@@ -8,11 +8,12 @@ TagManager:
   - PickUp
   - Runner
   - Chaser
+  - Disguse
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Walls
   - Water
   - UI
   - 

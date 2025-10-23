@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Threading;
+using System.Collections;
 
 public class ChaserMover : MonoBehaviour
 {
@@ -15,8 +17,10 @@ public class ChaserMover : MonoBehaviour
     Rigidbody rbody;
 
     bool grounded;
+    int count;
 
     [SerializeField] List<GameObject> targets = new List<GameObject>();
+    [SerializeField] List<GameObject> pickup = new List<GameObject>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -41,14 +45,56 @@ public class ChaserMover : MonoBehaviour
 
                 RotateAway();
             }
+            else if(pickup.Count > 0)
+            {
+                if(!Physics.Linecast(transform.position + new Vector3(0, 1, 0), pickup[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count++;
+                    if (count >= 50)
+                    {
+                        if (Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), -transform.right, out hitLeft, Quaternion.identity, sideDist) || Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), transform.right, out hitRight, Quaternion.identity, sideDist))
+                        {
+
+                        }
+                        else
+                        {
+                            transform.LookAt(pickup[0].transform.position);
+                        }
+
+                    }
+
+                }
+                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), pickup[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count = 0;
+                }
+                if (Vector3.Distance(transform.position + Vector3.forward, pickup[0].transform.position) < 1.5f)
+                {
+                    pickup[0].SetActive(false);
+                    StartCoroutine(SpeedUp());
+                }
+                if(pickup[0].activeSelf == false)
+                {
+                    pickup.RemoveAt(0);
+                }
+            }
             else if (targets.Count > 0)
             {
-                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0)))//could do a layermask to fix
-                {//LineCast WAs Hitting Something so i took out the excalmation !!!!!!!!!!!
-                    transform.LookAt(targets[0].transform.position);
+                if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count++;
+                    if (count >= 50)
+                    {
+                        transform.LookAt(targets[0].transform.position);
+                    }
+
+                }
+                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count = 0;
                 }
 
-                if (Vector3.Distance(transform.position + Vector3.forward, targets[0].transform.position) < 1) //The boxcast gets in the way of this and makes it turn
+                if (Vector3.Distance(transform.position + Vector3.forward, targets[0].transform.position) < 1.5f) //The boxcast gets in the way of this and makes it turn
                 {
                     targets[0].SetActive(false);
                 }
@@ -143,6 +189,10 @@ public class ChaserMover : MonoBehaviour
         {
             targets.Add(other.transform.parent.gameObject);
         }
+        if (other.CompareTag("PickUp"))
+        {
+            pickup.Add(other.transform.parent.gameObject);
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -151,5 +201,15 @@ public class ChaserMover : MonoBehaviour
         {
             targets.Remove(other.transform.parent.gameObject);
         }
+        if (other.CompareTag("PickUp"))
+        {
+            pickup.Remove(other.transform.parent.gameObject);
+        }
+    }
+    IEnumerator SpeedUp()
+    {
+        movementSpeed += 2;
+        yield return new WaitForSeconds(3);
+        movementSpeed -= 2;
     }
 }

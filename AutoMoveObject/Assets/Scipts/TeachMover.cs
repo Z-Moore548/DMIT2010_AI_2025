@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class AdvancedMover : MonoBehaviour
 {
     [SerializeField] float movementSpeed;
-    RaycastHit hitFront, hitLeft, hitRight;
+    RaycastHit hitFront, hitLeft, hitRight, hitEnemy;
     [SerializeField] float forwardDist, sideDist, downDist;
     bool leftWall, rightWall;
 
@@ -17,10 +18,14 @@ public class AdvancedMover : MonoBehaviour
     Rigidbody rbody;
 
     bool grounded, isDisguised;
+    Vector3 chaserNormal;
 
     [SerializeField] List<GameObject> chaser = new List<GameObject>();
     [SerializeField] List<GameObject> speed = new List<GameObject>();
     [SerializeField] List<GameObject> disguise = new List<GameObject>();
+
+    public bool IsDisguised { get => isDisguised; }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -37,6 +42,10 @@ public class AdvancedMover : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (Keyboard.current.escapeKey.isPressed)
+        {
+            Application.Quit();
+        }
         if (grounded)
         {
             // Rotate the mover if an object is detected in front
@@ -46,7 +55,7 @@ public class AdvancedMover : MonoBehaviour
 
                 RotateAway();
             }
-            else if(disguise.Count > 0)
+            else if (disguise.Count > 0)
             {
                 if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), disguise[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
                 {
@@ -68,7 +77,7 @@ public class AdvancedMover : MonoBehaviour
                 {
                     count = 0;
                 }
-                if (Vector3.Distance(transform.position + Vector3.forward, disguise[0].transform.position) < 1.5f)
+                if (Vector3.Distance(transform.position + Vector3.forward, disguise[0].transform.position) < 2)
                 {
                     disguise[0].SetActive(false);
                     StartCoroutine(Disguise());
@@ -101,7 +110,7 @@ public class AdvancedMover : MonoBehaviour
                 {
                     count = 0;
                 }
-                if (Vector3.Distance(transform.position + Vector3.forward, speed[0].transform.position) < 1.5f)
+                if (Vector3.Distance(transform.position + Vector3.forward, speed[0].transform.position) < 2)
                 {
                     speed[0].SetActive(false);
                     StartCoroutine(SpeedUp());
@@ -109,6 +118,47 @@ public class AdvancedMover : MonoBehaviour
                 if (speed[0].activeSelf == false)
                 {
                     speed.RemoveAt(0);
+                }
+            }
+            else if( chaser.Count > 1) //&& !Physics.Linecast(transform.position + new Vector3(0, 1, 0), chaser[1].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+            {
+                
+                if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), chaser[1].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count++;
+                    if(count >= 50)
+                    {
+                       if (Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), -transform.right, out hitLeft, Quaternion.identity, sideDist) || Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), transform.right, out hitRight, Quaternion.identity, sideDist))
+                        {
+
+                        }
+                        else
+                        {
+                            Vector3 mid = chaser[0].transform.position + chaser[1].transform.position;
+                            Vector3 dirMid = mid - transform.position;
+                            transform.rotation = Quaternion.LookRotation(transform.position - dirMid);
+                        } 
+                    }
+                    
+                }
+                else 
+                {
+                    if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), chaser[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                    {
+                        count++;
+                        if (count >= 50)
+                        {
+                            if (Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), -transform.right, out hitLeft, Quaternion.identity, sideDist) || Physics.BoxCast(transform.position + transform.up, new Vector3(0.5f, 1, 0.5f), transform.right, out hitRight, Quaternion.identity, sideDist))
+                            {
+
+                            }
+                            else
+                            {
+                                transform.rotation = Quaternion.LookRotation(transform.position - chaser[0].transform.position);
+                            }
+
+                        }
+                    }
                 }
             }
             else if (chaser.Count > 0)

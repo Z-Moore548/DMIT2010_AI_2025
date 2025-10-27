@@ -45,9 +45,39 @@ public class ChaserMover : MonoBehaviour
 
                 RotateAway();
             }
-            else if(pickup.Count > 0)
+            else if (targets.Count > 0)
             {
-                if(!Physics.Linecast(transform.position + new Vector3(0, 1, 0), pickup[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count++;
+                    if (count >= 50)
+                    {
+                        if (!targets[0].GetComponent<AdvancedMover>().IsDisguised)
+                        {
+                            transform.LookAt(targets[0].transform.position);
+                        }
+                        
+                    }
+
+                }
+                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
+                {
+                    count = 0;
+                }
+
+                if (Vector3.Distance(transform.position + Vector3.forward, targets[0].transform.position) < 2) //The boxcast gets in the way of this and makes it turn
+                {
+                    targets[0].SetActive(false);
+                }
+
+                if (targets[0].activeSelf == false)
+                {
+                    targets.RemoveAt(0);
+                }
+            }
+            else if (pickup.Count > 0)
+            {
+                if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), pickup[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
                 {
                     count++;
                     if (count >= 50)
@@ -68,42 +98,17 @@ public class ChaserMover : MonoBehaviour
                 {
                     count = 0;
                 }
-                if (Vector3.Distance(transform.position + Vector3.forward, pickup[0].transform.position) < 1.5f)
+                if (Vector3.Distance(transform.position + Vector3.forward, pickup[0].transform.position) < 2)
                 {
                     pickup[0].SetActive(false);
                     StartCoroutine(SpeedUp());
                 }
-                if(pickup[0].activeSelf == false)
+                if (pickup[0].activeSelf == false)
                 {
                     pickup.RemoveAt(0);
                 }
             }
-            else if (targets.Count > 0)
-            {
-                if (!Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
-                {
-                    count++;
-                    if (count >= 50)
-                    {
-                        transform.LookAt(targets[0].transform.position);
-                    }
-
-                }
-                if (Physics.Linecast(transform.position + new Vector3(0, 1, 0), targets[0].transform.position + new Vector3(0, 1, 0), 3 << LayerMask.NameToLayer("Walls")))
-                {
-                    count = 0;
-                }
-
-                if (Vector3.Distance(transform.position + Vector3.forward, targets[0].transform.position) < 1.5f) //The boxcast gets in the way of this and makes it turn
-                {
-                    targets[0].SetActive(false);
-                }
-
-                if (targets[0].activeSelf == false)
-                {
-                    targets.RemoveAt(0);
-                }
-            }
+            
 
             // Rotate the mover if a hole is detected in front
              if (!Physics.BoxCast(downCheck.transform.position, new Vector3(0.5f, 0.9f, 0.5f), -transform.up, out hitFront, Quaternion.identity, forwardDist))

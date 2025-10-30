@@ -18,7 +18,7 @@ public class AdvancedMover : MonoBehaviour
     Rigidbody rbody;
 
     bool grounded, isDisguised;
-    Vector3 chaserNormal;
+    Vector3 chaserNormal, mid;
 
     [SerializeField] List<GameObject> chaser = new List<GameObject>();
     [SerializeField] List<GameObject> speed = new List<GameObject>();
@@ -134,7 +134,12 @@ public class AdvancedMover : MonoBehaviour
                         }
                         else
                         {
-                            Vector3 mid = chaser[0].transform.position + chaser[1].transform.position;
+                            
+                            // for (int i = 0; i < chaser.Count; i++)
+                            // {
+                            //     mid += chaser[i].transform.position;
+                            // }
+                            mid = chaser[0].transform.position + chaser[1].transform.position;
                             Vector3 dirMid = mid - transform.position;
                             transform.rotation = Quaternion.LookRotation(transform.position - dirMid);
                         } 

@@ -262,16 +262,19 @@ public class AdvancedMover : MonoBehaviour
         }
         else
         {
-            randInt = Random.Range(0, 2);
-            if (randInt == 0)
+            if (chaser.Count > 0)
             {
-                transform.Rotate(Vector3.up, 90);
+                float left = Vector3.Distance(this.transform.position + Vector3.left, chaser[0].transform.position);
+                float right = Vector3.Distance(this.transform.position + -Vector3.left, chaser[0].transform.position);
+                if (left > right)
+                {
+                    transform.Rotate(Vector3.up, -90);
+                }
+                if(right > left)
+                {
+                    transform.Rotate(Vector3.up, 90);
+                }
             }
-            else
-            {
-                transform.Rotate(Vector3.up, -90);
-            }
-
         }
     }
 

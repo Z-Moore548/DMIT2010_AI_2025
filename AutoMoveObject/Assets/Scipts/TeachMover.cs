@@ -268,11 +268,11 @@ public class AdvancedMover : MonoBehaviour
                 float right = Vector3.Distance(this.transform.position + -Vector3.left, chaser[0].transform.position);
                 if (left > right)
                 {
-                    transform.Rotate(Vector3.up, -90);
+                    transform.Rotate(Vector3.up, 90);
                 }
                 if(right > left)
                 {
-                    transform.Rotate(Vector3.up, 90);
+                    transform.Rotate(Vector3.up, -90);
                 }
             }
         }

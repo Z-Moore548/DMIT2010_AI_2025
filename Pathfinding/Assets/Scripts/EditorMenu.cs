@@ -37,9 +37,9 @@ public class EditorMenu : MonoBehaviour
             floorExtents = floor.gameObject.GetComponent<BoxCollider>().bounds.extents - new Vector3(1, 0, 1);
 
             // Starting at the bottom left corner spawn pathnodes along the entire surface of the selected floor
-            for (float i = floorExtents.x * -2; i <= 0; i += 2)
+            for (float i = floorExtents.x * -2; i <= 0; i += 3)
             {
-                for (float j = floorExtents.z * -2; j <= 0; j += 2)
+                for (float j = floorExtents.z * -2; j <= 0; j += 3)
                 {
                     GameObject spawnedNode = Instantiate(pathNode, floor.position + floorExtents + new Vector3(i, 0, j), floor.rotation);
                     count++;
@@ -261,7 +261,7 @@ public class EditorMenu : MonoBehaviour
                 // Make sure the target node is not the current node
                 if (node.transform != target.transform)
                 {
-                    if (Vector3.Distance(node.transform.position, target.transform.position) <= 3.1f &&
+                    if (Vector3.Distance(node.transform.position, target.transform.position) <= 2.1f &&
                         !Physics.SphereCast(new Ray(node.transform.position + new Vector3(0, 1, 0), target.transform.position - node.transform.position), 0.4f, Vector3.Distance(node.transform.position, target.transform.position)) &&
                         !Physics.CheckSphere(node.transform.position + new Vector3(0, 1, 0), 0.4f))
                     {

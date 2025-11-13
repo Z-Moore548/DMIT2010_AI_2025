@@ -1,11 +1,12 @@
 using UnityEngine;
 
-public class AIPathfinder : MonoBehaviour
+public class BlueSpy : MonoBehaviour
 {
     [SerializeField] GameObject startNode, endNode, currentNode, targetNode, prevNode;
     [SerializeField] GameObject[] waypoints;
     float moveSpeed;
     int waypointIndex = 0;
+    public bool keyGot;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -13,13 +14,12 @@ public class AIPathfinder : MonoBehaviour
         currentNode = startNode;
         targetNode = currentNode;
         endNode = waypoints[waypointIndex];
-        moveSpeed = 5.0f;
+        moveSpeed = 3.0f;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //If the AI is at the target node than find a new target to move to
         if (Vector3.Distance(transform.position, targetNode.transform.position) < 0.1f)
         {
             prevNode = currentNode;

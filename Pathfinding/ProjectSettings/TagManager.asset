@@ -8,6 +8,8 @@ TagManager:
   - Floor
   - SpawnTrigger
   - Key
+  - BlueSpy
+  - RedSpy
   layers:
   - Default
   - TransparentFX

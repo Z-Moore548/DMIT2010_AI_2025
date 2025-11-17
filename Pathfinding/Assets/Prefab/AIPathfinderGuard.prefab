@@ -52,7 +52,15 @@ MonoBehaviour:
   targetNode: {fileID: 0}
   prevNode: {fileID: 0}
   chaseTarget: {fileID: 0}
-  waypoints: []
+  waypoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!135 &7490603099146055581
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -85,7 +93,7 @@ GameObject:
   - component: {fileID: 1358058141948697315}
   - component: {fileID: 8066457742020143452}
   - component: {fileID: 4654000555403605227}
-  - component: {fileID: 25171286924947960}
+  - component: {fileID: 2420696324343849131}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -164,7 +172,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &25171286924947960
+--- !u!136 &2420696324343849131
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

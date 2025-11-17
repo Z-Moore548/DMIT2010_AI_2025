@@ -81,8 +81,17 @@ public class AIPathfinder : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("F");
-        chaseTarget = other.gameObject;
+        if (other.gameObject.CompareTag("BlueSpy") || other.gameObject.CompareTag("RedSpy"))
+        {
+            chaseTarget = other.gameObject;
+        }
     }
-    
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("BlueSpy") || other.gameObject.CompareTag("RedSpy"))
+        {
+            chaseTarget = null;
+        }
+    }
+
 }

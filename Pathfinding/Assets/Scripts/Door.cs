@@ -7,6 +7,7 @@ public class Door : MonoBehaviour
 
     [SerializeField] bool open;
     [SerializeField] GameObject doorModel;
+    [SerializeField] GameObject redSpy, blueSpy;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -17,18 +18,18 @@ public class Door : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.oKey.wasPressedThisFrame)
+        if (redSpy.GetComponent<RedSpy>().KeyGot || blueSpy.GetComponent<BlueSpy>().DoorPicked)
         {
             open = !open;
 
             if (open)
             {
-                doorModel.SetActive(false);
+                
                 foreach (GameObject node in nodes)
                 {
                     node.GetComponent<Pathnode>().nodeActive = true;
                 }
-
+                doorModel.SetActive(false);
             }
             else
             {

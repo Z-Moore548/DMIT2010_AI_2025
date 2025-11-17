@@ -2,11 +2,15 @@ using UnityEngine;
 
 public class RedSpy : MonoBehaviour
 {
-    [SerializeField] GameObject startNode, endNode, currentNode, targetNode, prevNode;
+    [SerializeField] GameObject startNode, endNode, currentNode, targetNode, prevNode, key, file;
     [SerializeField] GameObject[] waypoints;
     float moveSpeed;
     int waypointIndex = 0;
-    public bool keyGot;
+    [SerializeField] private bool keyGot, fileGot;
+
+    public bool KeyGot { get => keyGot; set => keyGot = value; }
+    public bool FileGot { get => fileGot; set => fileGot = value; }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -14,7 +18,7 @@ public class RedSpy : MonoBehaviour
         currentNode = startNode;
         targetNode = currentNode;
         endNode = waypoints[waypointIndex];
-        moveSpeed = 3.0f;
+        moveSpeed = 5.0f;
     }
 
     // Update is called once per frame
@@ -27,7 +31,7 @@ public class RedSpy : MonoBehaviour
 
             if(currentNode == endNode)
             {
-                waypointIndex = Random.Range(0, waypoints.Length);
+                waypointIndex++;
                 // if (waypointIndex > waypoints.Length)
                 // {
                 //     waypointIndex = 0;
@@ -67,6 +71,20 @@ public class RedSpy : MonoBehaviour
         else
         {
             transform.Translate((targetNode.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime);
+        }
+        if(currentNode == waypoints[1])
+        {
+            keyGot = true;
+            key.SetActive(false);
+        }
+        if(currentNode == waypoints[3])
+        {
+            fileGot = true;
+            file.SetActive(false);
+        }
+        if(currentNode == waypoints[5])
+        {
+            fileGot = false;
         }
     }
 }

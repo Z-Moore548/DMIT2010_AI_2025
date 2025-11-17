@@ -16,7 +16,7 @@ public class KeyDoor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (redSpy.GetComponent<RedSpy>().keyGot)
+        if (redSpy.GetComponent<RedSpy>().KeyGot)
         {
             open = true;
 

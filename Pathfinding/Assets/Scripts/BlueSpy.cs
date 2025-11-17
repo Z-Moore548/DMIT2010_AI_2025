@@ -1,12 +1,17 @@
+using System.Collections;
 using UnityEngine;
 
 public class BlueSpy : MonoBehaviour
 {
-    [SerializeField] GameObject startNode, endNode, currentNode, targetNode, prevNode;
+    [SerializeField] GameObject startNode, endNode, currentNode, targetNode, prevNode, file;
     [SerializeField] GameObject[] waypoints;
     float moveSpeed;
     int waypointIndex = 0;
-    public bool keyGot;
+    private bool fileGot, doorPicked, picking;
+
+    public bool FileGot { get => fileGot; set => fileGot = value; }
+    public bool DoorPicked { get => doorPicked; set => doorPicked = value; }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -14,7 +19,7 @@ public class BlueSpy : MonoBehaviour
         currentNode = startNode;
         targetNode = currentNode;
         endNode = waypoints[waypointIndex];
-        moveSpeed = 3.0f;
+        moveSpeed = 5.0f;
     }
 
     // Update is called once per frame
@@ -27,7 +32,7 @@ public class BlueSpy : MonoBehaviour
 
             if(currentNode == endNode)
             {
-                waypointIndex = Random.Range(0, waypoints.Length);
+                waypointIndex++;
                 // if (waypointIndex > waypoints.Length)
                 // {
                 //     waypointIndex = 0;
@@ -64,9 +69,30 @@ public class BlueSpy : MonoBehaviour
                 
             }
         }
+        else if (picking)
+        {
+            
+        }
         else
         {
             transform.Translate((targetNode.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime);
         }
+        if(currentNode == waypoints[2])
+        {
+            FileGot = true;
+            file.SetActive(false);
+        }
+        if(currentNode == waypoints[0])
+        {
+            StartCoroutine(PickingLock());
+        }
+    }
+
+    IEnumerator PickingLock()
+    {
+        picking = true;
+        yield return new WaitForSeconds(3);
+        picking = false;
+        doorPicked = true;
     }
 }

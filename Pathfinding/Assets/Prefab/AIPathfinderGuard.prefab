@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6041740643003126445}
   - component: {fileID: 272305906929006864}
+  - component: {fileID: 7490603099146055581}
   m_Layer: 0
   m_Name: AIPathfinderGuard
   m_TagString: Untagged
@@ -50,7 +51,29 @@ MonoBehaviour:
   currentNode: {fileID: 0}
   targetNode: {fileID: 0}
   prevNode: {fileID: 0}
+  chaseTarget: {fileID: 0}
   waypoints: []
+--- !u!135 &7490603099146055581
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2487444953541998730}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 4.5
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &4090139195489638743
 GameObject:
   m_ObjectHideFlags: 0

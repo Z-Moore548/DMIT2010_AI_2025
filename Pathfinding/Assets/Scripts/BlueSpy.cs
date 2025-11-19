@@ -82,10 +82,22 @@ public class BlueSpy : MonoBehaviour
             FileGot = true;
             file.SetActive(false);
         }
-        if(currentNode == waypoints[0])
+        if(endNode == waypoints[2] && fileGot)
+        {
+            waypointIndex++;
+            endNode = waypoints[waypointIndex];
+        }
+        if(currentNode == waypoints[0] && doorPicked == false)
         {
             StartCoroutine(PickingLock());
         }
+    }
+
+    public void Caught()
+    {
+        Debug.Log("HEYO");
+        waypointIndex = 0;
+        Start();
     }
 
     IEnumerator PickingLock()

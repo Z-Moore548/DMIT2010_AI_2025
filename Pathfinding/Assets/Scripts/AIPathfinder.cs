@@ -15,7 +15,7 @@ public class AIPathfinder : MonoBehaviour
         currentNode = startNode;
         targetNode = currentNode;
         endNode = waypoints[waypointIndex];
-        moveSpeed = 5.0f;
+        moveSpeed = 7.0f;
         chaseTarget = null;
     }
 
@@ -25,12 +25,60 @@ public class AIPathfinder : MonoBehaviour
         if(chaseTarget != null)
         {
             Debug.Log("Chasing");
+            endNode = chaseTarget;
+            if (Vector3.Distance(transform.position, targetNode.transform.position) < 0.1f)
+            {
+                
+                prevNode = currentNode;
+                currentNode = targetNode;
+
+                float closestDistance = 10000;
+
+                Pathnode pathScript = currentNode.GetComponent<Pathnode>();
+
+                if (pathScript != null)
+                {
+
+                    for (int i = 0; i < pathScript.connections.Count; i++)
+                    {
+                        if(pathScript.connections[i] != prevNode && pathScript.connections[i].GetComponent<Pathnode>().nodeActive)
+                        {
+                            if(Vector3.Distance(pathScript.connections[i].transform.position, endNode.transform.position) < closestDistance)
+                            {
+                                targetNode = pathScript.connections[i];
+                                closestDistance = Vector3.Distance(pathScript.connections[i].transform.position, endNode.transform.position);
+                            }
+                            
+                        }
+                    }
+                    
+                    
+                }
+            }
+            else
+            {
+                transform.Translate((targetNode.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime);
+            }
+            if (Vector3.Distance(transform.position, chaseTarget.transform.position) < 1.4f)
+            {
+                if (chaseTarget.gameObject.CompareTag("BlueSpy"))
+                {
+                    chaseTarget.gameObject.GetComponentInParent<BlueSpy>().Caught();
+                }
+                if (chaseTarget.gameObject.CompareTag("RedSpy"))
+                {
+                    chaseTarget.gameObject.GetComponentInParent<RedSpy>().Caught();
+                }
+                endNode = waypoints[waypointIndex];
+                chaseTarget = null;
+            }
         }
         if(chaseTarget == null)
         {
             //If the AI is at the target node than find a new target to move to
             if (Vector3.Distance(transform.position, targetNode.transform.position) < 0.1f)
             {
+                
                 prevNode = currentNode;
                 currentNode = targetNode;
 
@@ -83,7 +131,11 @@ public class AIPathfinder : MonoBehaviour
     {
         if (other.gameObject.CompareTag("BlueSpy") || other.gameObject.CompareTag("RedSpy"))
         {
-            chaseTarget = other.gameObject;
+            if(!Physics.Linecast(transform.position, other.gameObject.transform.position, 3 << LayerMask.NameToLayer("Walls")))
+            {
+                chaseTarget = other.gameObject;
+            }
+            
         }
     }
     void OnTriggerExit(Collider other)
@@ -93,5 +145,17 @@ public class AIPathfinder : MonoBehaviour
             chaseTarget = null;
         }
     }
+
+    // void OnCollisionEnter(Collision other)
+    // {
+    //     if (other.gameObject.CompareTag("BlueSpy"))
+    //     {
+    //         other.gameObject.GetComponent<BlueSpy>().Caught();
+    //     }
+    //     if (other.gameObject.CompareTag("RedSpy"))
+    //     {
+    //         other.gameObject.GetComponent<RedSpy>().Caught();
+    //     }
+    // }
 
 }

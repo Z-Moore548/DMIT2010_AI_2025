@@ -6,7 +6,7 @@ public class RedSpy : MonoBehaviour
     [SerializeField] GameObject[] waypoints;
     float moveSpeed;
     int waypointIndex = 0;
-    [SerializeField] private bool keyGot, fileGot;
+    [SerializeField] private bool keyGot, fileGot, fileDestoryed;
 
     public bool KeyGot { get => keyGot; set => keyGot = value; }
     public bool FileGot { get => fileGot; set => fileGot = value; }
@@ -77,14 +77,35 @@ public class RedSpy : MonoBehaviour
             keyGot = true;
             key.SetActive(false);
         }
+        if(endNode == waypoints[3] && keyGot)
+        {
+            waypointIndex++;
+            endNode = waypoints[waypointIndex];
+        }
         if(currentNode == waypoints[3])
         {
             fileGot = true;
             file.SetActive(false);
         }
+        if(endNode == waypoints[3] && fileGot)
+        {
+            waypointIndex++;
+            endNode = waypoints[waypointIndex];
+        }
         if(currentNode == waypoints[5])
         {
-            fileGot = false;
+            fileDestoryed = false;
         }
+        if(endNode == waypoints[5] && fileDestoryed)
+        {
+            waypointIndex++;
+            endNode = waypoints[waypointIndex];
+        }
+    }
+
+    public void Caught()
+    {
+        waypointIndex = 0;
+        Start();
     }
 }

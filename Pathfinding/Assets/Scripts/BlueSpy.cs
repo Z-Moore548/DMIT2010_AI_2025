@@ -12,6 +12,7 @@ public class BlueSpy : MonoBehaviour
 
     public bool FileGot { get => fileGot; set => fileGot = value; }
     public bool DoorPicked { get => doorPicked; set => doorPicked = value; }
+    public bool HasTaser { get => hasTaser; set => hasTaser = value; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,7 +23,7 @@ public class BlueSpy : MonoBehaviour
         endNode = waypoints[waypointIndex];
         moveSpeed = 5.0f;
         runTarget = null;
-        hasTaser = true;
+        HasTaser = true;
     }
 
     // Update is called once per frame
@@ -30,7 +31,7 @@ public class BlueSpy : MonoBehaviour
     {
         if(runTarget != null)
         {
-            if (hasTaser)
+            if (HasTaser)
             {
                 endNode = runTarget;
                 if (Vector3.Distance(transform.position, targetNode.transform.position) < 0.1f)
@@ -68,7 +69,7 @@ public class BlueSpy : MonoBehaviour
                 if (Vector3.Distance(transform.position, runTarget.transform.position) < 1.5f)
                 {
                     runTarget.GetComponent<AIPathfinder>().Tased();
-                    hasTaser = false;
+                    HasTaser = false;
                     endNode = waypoints[waypointIndex];
                     runTarget = null;
                 }

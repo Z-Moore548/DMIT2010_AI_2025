@@ -29,38 +29,38 @@ public class RedSpy : MonoBehaviour
         {
             moveSpeed = 7;
             endNode = runTarget;
-                if (Vector3.Distance(transform.position, targetNode.transform.position) < 0.1f)
+            if (Vector3.Distance(transform.position, targetNode.transform.position) < 0.1f)
+            {
+                prevNode = currentNode;
+                currentNode = targetNode;
+
+                float furthestDistance = 0.1f;
+
+                Pathnode pathScript = currentNode.GetComponent<Pathnode>();
+
+                if (pathScript != null)
                 {
-                    prevNode = currentNode;
-                    currentNode = targetNode;
 
-                    float furthestDistance = 0.1f;
-
-                    Pathnode pathScript = currentNode.GetComponent<Pathnode>();
-
-                    if (pathScript != null)
+                    for (int i = 0; i < pathScript.connections.Count; i++)
                     {
-
-                        for (int i = 0; i < pathScript.connections.Count; i++)
+                        if(pathScript.connections[i] != prevNode && pathScript.connections[i].GetComponent<Pathnode>().nodeActive)
                         {
-                            if(pathScript.connections[i] != prevNode && pathScript.connections[i].GetComponent<Pathnode>().nodeActive)
+                            if(Vector3.Distance(pathScript.connections[i].transform.position, endNode.transform.position) > furthestDistance)
                             {
-                                if(Vector3.Distance(pathScript.connections[i].transform.position, endNode.transform.position) > furthestDistance)
-                                {
-                                    targetNode = pathScript.connections[i];
-                                    furthestDistance = Vector3.Distance(pathScript.connections[i].transform.position, endNode.transform.position);
-                                }
-                                
+                                targetNode = pathScript.connections[i];
+                                furthestDistance = Vector3.Distance(pathScript.connections[i].transform.position, endNode.transform.position);
                             }
+                            
                         }
-                        
-                        
                     }
+                    
+                    
                 }
-                else
-                {
-                    transform.Translate((targetNode.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime);
-                }
+            }
+            else
+            {
+                transform.Translate((targetNode.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime);
+            }
         }
         if(runTarget == null)
         {

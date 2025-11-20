@@ -25,6 +25,8 @@ public class AIPathfinder : MonoBehaviour
     {
         if(chaseTarget != null)
         {
+            moveSpeed = 6;
+            gameObject.GetComponentInChildren<Renderer>().material.color = Color.green;
             Debug.Log("Chasing");
             endNode = chaseTarget;
             if (Vector3.Distance(transform.position, targetNode.transform.position) < 0.1f)
@@ -76,6 +78,8 @@ public class AIPathfinder : MonoBehaviour
         }
         if(chaseTarget == null)
         {
+            gameObject.GetComponentInChildren<Renderer>().material.color = Color.hotPink;
+            moveSpeed = 5;
             //If the AI is at the target node than find a new target to move to
             if (Vector3.Distance(transform.position, targetNode.transform.position) < 0.1f)
             {

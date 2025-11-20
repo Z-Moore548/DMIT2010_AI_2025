@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CanvasController : MonoBehaviour
 {
-    [SerializeField] GameObject slotOne, slotTwo, slotThree, slotFour;
+    [SerializeField] GameObject slotOne, slotTwo, slotThree, slotFour, locked, Unlocked;
     [SerializeField] GameObject blueSpy, redSpy;
     
 
@@ -40,6 +40,16 @@ public class CanvasController : MonoBehaviour
         else
         {
             slotThree.SetActive(false);
+        }
+        if(redSpy.GetComponent<RedSpy>().KeyGot || blueSpy.GetComponent<BlueSpy>().DoorPicked)
+        {
+            Unlocked.SetActive(true);
+            locked.SetActive(false);
+        }
+        else
+        {
+            Unlocked.SetActive(false);
+            locked.SetActive(true);
         }
     }
 }

@@ -1,9 +1,10 @@
+using System.Collections;
 using UnityEngine;
 
 public class AIPathfinder : MonoBehaviour
 {
     [SerializeField] GameObject startNode, endNode, currentNode, targetNode, prevNode;
-    [SerializeField] GameObject chaseTarget;
+    [SerializeField] GameObject chaseTarget, jailSpot;
     [SerializeField] GameObject[] waypoints;
     float moveSpeed;
     int waypointIndex = 0;
@@ -15,7 +16,7 @@ public class AIPathfinder : MonoBehaviour
         currentNode = startNode;
         targetNode = currentNode;
         endNode = waypoints[waypointIndex];
-        moveSpeed = 7.0f;
+        moveSpeed = 5;
         chaseTarget = null;
     }
 
@@ -127,6 +128,12 @@ public class AIPathfinder : MonoBehaviour
             }
         }
     }
+    public void Tased()
+    {
+        gameObject.transform.position = jailSpot.transform.position;
+        moveSpeed = 0;
+        StartCoroutine(WaitForReactive());
+    }
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("BlueSpy") || other.gameObject.CompareTag("RedSpy"))
@@ -142,8 +149,17 @@ public class AIPathfinder : MonoBehaviour
     {
         if (other.gameObject.CompareTag("BlueSpy") || other.gameObject.CompareTag("RedSpy"))
         {
+            endNode = waypoints[waypointIndex];
             chaseTarget = null;
         }
+    }
+
+    IEnumerator WaitForReactive()
+    {
+        yield return new WaitForSeconds(5);
+        moveSpeed = 5;
+        gameObject.transform.position = currentNode.transform.position;
+
     }
 
     // void OnCollisionEnter(Collision other)

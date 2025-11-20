@@ -10,11 +10,12 @@ TagManager:
   - Key
   - BlueSpy
   - RedSpy
+  - Guard
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Walls
   - Water
   - UI
   - 

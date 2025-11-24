@@ -118,9 +118,9 @@ public class RedSpy : MonoBehaviour
                 keyGot = true;
                 key.SetActive(false);
             }
-            if(endNode == waypoints[0] && keyGot)
+            if(currentNode == waypoints[0] && keyGot)
             {
-                waypointIndex = 3;
+                waypointIndex = 2;
                 endNode = waypoints[waypointIndex];
             }
             if(currentNode == waypoints[3])
@@ -136,6 +136,7 @@ public class RedSpy : MonoBehaviour
             if(currentNode == waypoints[5])
             {
                 fileDestoryed = false;
+                fileGot = false;
             }
             if(endNode == waypoints[5] && fileDestoryed)
             {

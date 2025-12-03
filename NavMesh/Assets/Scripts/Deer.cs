@@ -8,7 +8,11 @@ public class Deer : MonoBehaviour
 
     [SerializeField] GameObject targetObject;
     [SerializeField] States state;
-    int hunger, sleepy, stamina;
+    float hunger, sleepy, stamina;
+    bool running, dead;
+
+    public bool Running { get => running; set => running = value; }
+    public bool Dead { get => dead; set => dead = value; }
 
     enum States
     {
@@ -19,6 +23,7 @@ public class Deer : MonoBehaviour
     void Start()
     {
         myAgent = GetComponent<NavMeshAgent>();
+        running = false;
     }
 
     private void Update()
@@ -38,6 +43,24 @@ public class Deer : MonoBehaviour
             case States.Dead:
             break;
         }
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Wolf")
+        {
+            running = true;
+        }
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if(other.gameObject.tag == "Wolf")
+        {
+            running = false;
+        }
+    }
+    public void Attacked()
+    {
+        
     }
 
     public void SetTarget(Vector3 target)
